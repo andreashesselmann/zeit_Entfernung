@@ -1,19 +1,32 @@
-# :earth_americas: GDP dashboard template
 
-A simple Streamlit app showing the GDP of different countries in the world.
+# Vereins-Entfernungen & Fahrzeiten — Streamlit App
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://gdp-dashboard-template.streamlit.app/)
+Diese App berechnet Entfernungs- und Fahrzeit-Matrizen zwischen allen Vereinen in einer Excel-Datei mittels Google Maps Distance Matrix API.
 
-### How to run it on your own machine
+## Features
+- Excel-Upload
+- Flexible Spaltenzuordnung (Name, Straße, PLZ, Ort)
+- Geocoding mit Cache (Import/Export)
+- Distance Matrix alle gegen alle (km & min), inkl. Traffic (optional)
+- Excel-Export mit mehreren Sheets
 
-1. Install the requirements
-
+## Nutzung
+1. Python 3.10+ installieren
+2. Abhängigkeiten installieren:
+   ```bash
+   pip install -r requirements.txt
    ```
-   $ pip install -r requirements.txt
+3. App starten:
+   ```bash
+   streamlit run bhv_distance_app.py
    ```
+4. Im Browser: Excel hochladen, Google API Key eingeben, Spalten zuordnen, geokodieren, berechnen, exportieren.
 
-2. Run the app
+## Google API
+- APIs aktivieren: Geocoding API & Distance Matrix API
+- API-Key: In der Google Cloud Console anlegen und einschränken (HTTP-Referer/Domain oder IP).
+- Kosten: Bitte die aktuellen Preise in der Cloud Console prüfen.
 
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+## Hinweise
+- Google Limits: bis zu 25 Origins x 25 Destinations pro Request (625 Elemente). Die App chunked automatisch.
+- Fahrzeiten hängen von Verkehr & Abfahrtszeit ab (für driving mit departure_time=now).
