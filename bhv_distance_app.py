@@ -110,25 +110,38 @@ def distance_matrix_batch(origins: List[str], destinations: List[str], key: str,
     return results
 
 def build_full_address(df: pd.DataFrame, col_map):
-    def safe(col):
-        return df[col].astype(str).str.strip() if col and col in df.columns else ""
-    street = safe(col_map.get("street"))
-    zipc = safe(col_map.get("zip"))
-    city = safe(col_map.get("city"))
-    country = safe(col_map.get("country"))
-    if country == "":
-        country = "Deutschland"
+    def col_or_empty(name):
+        return df[name].astype(str).str.strip() if name and name in df.columns else pd.Series([""] * len(df), index=df.index)
+
+    street_s = col_or_empty(col_map.get("street"))
+    zip_s    = col_or_empty(col_map.get("zip"))
+    city_s   = col_or_empty(col_map.get("city"))
+    # country: falls Spalte fehlt oder leer -> "Deutschland"
+    if col_map.get("country") and col_map.get("country") in df.columns:
+        country_s = df[col_map["country"]].astype(str).str.strip().fillna("")
+    else:
+        country_s = pd.Series([""] * len(df), index=df.index)
+
     full = []
     for i in range(len(df)):
+        street  = street_s.iat[i] if i < len(street_s) else ""
+        zipc    = zip_s.iat[i]    if i < len(zip_s)    else ""
+        city    = city_s.iat[i]   if i < len(city_s)   else ""
+        country = country_s.iat[i] if i < len(country_s) else ""
+        if not country:
+            country = "Deutschland"
+
         segs = []
-        if street != "":
-            segs.append(street.iloc[i])
-        place = " ".join([x for x in [zipc.iloc[i] if zipc != "" else "", city.iloc[i] if city != "" else ""] if x])
-        if place:
-            segs.append(place)
+        if street:
+            segs.append(street)
+        place_parts = [p for p in [zipc, city] if p]
+        if place_parts:
+            segs.append(" ".join(place_parts))
         if country:
-            segs.append(country if isinstance(country, str) else (country.iloc[i] if hasattr(country, "iloc") else "Deutschland"))
-        full.append(", ".join([s for s in segs if s]))
+            segs.append(country)
+
+        full.append(", ".join(segs))
+
     return pd.Series(full, index=df.index, name="full_address")
 
 def to_latlng_string(lat: float, lng: float) -> str:
