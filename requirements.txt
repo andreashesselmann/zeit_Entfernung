@@ -4,3 +4,4 @@ pandas>=2.2
 requests>=2.32
 xlsxwriter>=3.2
 googlemaps>=4.10
+openpyxl>=3.1
