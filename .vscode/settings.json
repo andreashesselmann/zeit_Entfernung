@@ -1,0 +1,4 @@
+{
+  "python.defaultInterpreterPath": "/workspaces/zeit_Entfernung/.venv/bin/python",
+  "python.analysis.autoImportCompletions": true
+}
